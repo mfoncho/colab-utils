@@ -41,7 +41,7 @@ export interface InputEvent {
 export interface Input<T> {
     value: T;
     valid: boolean;
-    setValue: (val: T) => void | ((val: T) => T);
+    setValue: React.SetStateAction<T>;
     onChange: (e: InputEvent) => void;
     props: { value: T; onChange: (e: InputEvent) => void };
 }
