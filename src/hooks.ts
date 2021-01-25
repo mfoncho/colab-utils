@@ -32,7 +32,24 @@ export interface Validation<T> {
     validate: (v: T) => boolean;
 }
 
-export function useFormInput<T>(original: T, validate?: (v: T) => boolean) {
+export interface InputEvent {
+    target: {
+        value: any;
+    };
+}
+
+export interface Input<T> {
+    value: T;
+    valid: boolean;
+    setValue: (val: T) => void | ((val: T) => T);
+    onChange: (e: InputEvent) => void;
+    props: { value: T; onChange: (e: InputEvent) => void };
+}
+
+export function useInput<T>(
+    original: T,
+    validate?: (v: T) => boolean
+): Input<T> {
     const [value, setValue] = useState<T>(original);
 
     const [valid, setValid] = useState<boolean>(false);
@@ -45,7 +62,7 @@ export function useFormInput<T>(original: T, validate?: (v: T) => boolean) {
                     typeof original == "string" ? original.trim() : original;
 
                 if (validate) {
-                    setValid(validate(value));
+                    setValid(validate(value as any));
                 } else if (orig === val) {
                     setValid(false);
                 } else {
@@ -59,7 +76,7 @@ export function useFormInput<T>(original: T, validate?: (v: T) => boolean) {
         }
     }, [value, original]);
 
-    function onChange(e: any) {
+    function onChange(e: InputEvent) {
         if (typeof original == "number") {
             setValue(Number(e.target.value) as any);
         } else {
@@ -139,5 +156,3 @@ export function useDebouncedCallback<
         }, wait);
     }, watch) as T;
 }
-
-export const useInput = useFormInput;
