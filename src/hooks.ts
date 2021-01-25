@@ -1,0 +1,143 @@
+import { useTheme } from "@material-ui/core";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useEffect, useRef, useState, useCallback } from "react";
+
+export function useScreen() {
+    const theme = useTheme();
+    const desktop = useMediaQuery(theme.breakpoints.up("lg"));
+    const mobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const tablet = useMediaQuery(theme.breakpoints.only("md"));
+    return { mobile, tablet, desktop };
+}
+
+export function useCurPrev<T, P>(value: T) {
+    const [[curr, prev], update] = useState<[T, T | P]>([value, value]);
+
+    useEffect(() => {
+        update([value, curr]);
+    }, [value]);
+
+    return [curr, prev];
+}
+
+export interface ValidationRule {
+    max?: number;
+    min?: number;
+    required?: boolean;
+}
+
+export interface Validation<T> {
+    name: string;
+    rules: ValidationRule[];
+    validate: (v: T) => boolean;
+}
+
+export function useFormInput<T>(original: T, validate?: (v: T) => boolean) {
+    const [value, setValue] = useState<T>(original);
+
+    const [valid, setValid] = useState<boolean>(false);
+
+    useEffect(() => {
+        switch (typeof value) {
+            case "string":
+                let val = value.trim();
+                let orig =
+                    typeof original == "string" ? original.trim() : original;
+
+                if (validate) {
+                    setValid(validate(value));
+                } else if (orig === val) {
+                    setValid(false);
+                } else {
+                    setValid(Boolean(val));
+                }
+
+                break;
+
+            default:
+                setValid(Boolean(value));
+        }
+    }, [value, original]);
+
+    function onChange(e: any) {
+        if (typeof original == "number") {
+            setValue(Number(e.target.value) as any);
+        } else {
+            setValue(e.target.value);
+        }
+    }
+
+    return { value, valid, setValue, onChange, props: { value, onChange } };
+}
+
+export function useUnmount<T extends readonly unknown[], S>(
+    cb: (props: T) => S,
+    val: T
+) {
+    const ref = useRef<{ val: T; fn: (props: T) => S }>();
+    const fn = useCallback(cb, val);
+    useEffect(() => {
+        ref.current = { val, fn };
+    }, [fn]);
+
+    useEffect(() => {
+        return () => {
+            ref!.current!.fn(ref.current!.val);
+        };
+    }, []);
+}
+
+export function useDebounce<T>(value: T, delay: number) {
+    // State and setters for debounced value
+
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+    useEffect(() => {
+        // Update debounced value after delay
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+}
+
+export function useDebouncedCallback<
+    T extends (...args: any[]) => any,
+    S extends readonly unknown[]
+>(callback: T, wait: number, watch: S = [] as any) {
+    // track args & timeout handle between calls
+    const argsRef = useRef<any[]>();
+    const timeout = useRef<ReturnType<typeof setTimeout>>();
+
+    function cleanup() {
+        if (timeout.current) {
+            clearTimeout(timeout.current);
+        }
+    }
+
+    // make sure our timeout gets cleared if
+    // our consuming component gets unmounted
+    useEffect(() => cleanup, []);
+
+    return useCallback((...args: any[]) => {
+        // capture latest args
+        argsRef.current = args;
+
+        // clear debounce timer
+        cleanup();
+
+        // start waiting again
+        timeout.current = setTimeout(() => {
+            if (argsRef.current) {
+                callback(...argsRef.current);
+            }
+        }, wait);
+    }, watch) as T;
+}
+
+export const useInput = useFormInput;

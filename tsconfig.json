@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "jsx": "react",                     
+        "module": "ESNext", 
+        "outDir": "./lib",
+        "sourceMap": true,
+        "strict": true,                           
+        "declaration": true,
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node", 
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "lib"]
+}

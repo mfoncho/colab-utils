@@ -1,0 +1,27 @@
+{
+    "name": "@colab/utils",
+    "version": "1.0.0",
+    "description": "colab utils",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "postinstall": "tsc"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "jsxBracketSameLine": true
+    },
+    "repository": "https://github.com/mfoncho/colab-utils",
+    "author": "colab team",
+    "license": "MIT",
+    "dependencies": {
+        "@material-ui/core": "^4.11.3",
+        "@types/immutable": "^3.8.7",
+        "immutable": "^4.0.0-rc.12"
+    },
+    "peerDependencies": {
+        "@types/react": "^17.0.0",
+        "react": "^17.0.1"
+    }
+}
