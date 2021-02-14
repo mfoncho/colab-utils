@@ -1,7 +1,22 @@
-import merge from 'lodash/merge';
-export { makeStyles, useTheme } from "@material-ui/core/styles";
+import merge from "lodash/merge";
+import {
+    ClassNameMap,
+    Styles,
+    WithStylesOptions,
+} from "@material-ui/styles/withStyles";
+//** Re-exporting so don't have to deal with typescript dependency depth (protable code) bug */
+export {
+    ClassNameMap,
+    Styles,
+    WithStylesOptions,
+} from "@material-ui/styles/withStyles";
+import {
+    makeStyles as baseMakeStyles,
+    useTheme as baseUseThemeHook,
+    Theme as BaseTheme,
+} from "@material-ui/core/styles";
 import { createMuiTheme, responsiveFontSizes } from "@material-ui/core/styles";
-import  colors  from "./colors";
+import colors from "./colors";
 
 export const hexToRgba = (hex: any, opacity = 0.0) => {
     let chex = hex.charAt(0) === "#" ? hex.substring(1, 7) : hex;
@@ -19,7 +34,7 @@ const root = {
     },
 
     utils: {
-        hexToRgba
+        hexToRgba,
     },
 
     typography: {
@@ -36,7 +51,7 @@ const root = {
 
         subtitle2: {
             fontWeight: 700,
-            fontSize: '0.884rem',
+            fontSize: "0.884rem",
         },
     },
 
@@ -62,25 +77,45 @@ const base = {
         ...root.palette,
         background: background.light,
     },
+};
+
+export type Theme = BaseTheme & typeof base;
+
+export type BaseMakeStylesT = typeof baseMakeStyles;
+
+export type BaseMakeStylesArgsT = Parameters<BaseMakeStylesT>;
+
+export const useTheme: () => Theme = baseUseThemeHook;
+
+export type StylesCreatorT = (theme: Theme) => object;
+
+export function makeStyles<
+    STheme = Theme,
+    Props extends object = {},
+    ClassKey extends string = string
+>(
+    styles: Styles<STheme, Props, ClassKey>,
+    options?: Omit<WithStylesOptions<STheme>, "withTheme">
+): keyof Props extends never // `makeStyles` where the passed `styles` do not depend on props
+    ? (props?: any) => ClassNameMap<ClassKey> // `makeStyles` where the passed `styles` do depend on props
+    : (props: Props) => ClassNameMap<ClassKey> {
+    return baseMakeStyles(styles, options);
 }
 
-
-export function createTheme(opts: any, mode: "light" | "dark" = "light"){
+export function createTheme(opts: any, mode: "light" | "dark" = "light") {
     return responsiveFontSizes(
         createMuiTheme(
-            merge( 
-                merge(base, opts), 
-                {
-                    background,
-                    paletette: {
-                        type: mode,
-                        background: opts.backgroud ? merge(background[mode], opts.backgroud) : background[mode]
-                    }
-                } 
-            )
+            merge(merge(base, opts), {
+                background,
+                paletette: {
+                    type: mode,
+                    background: opts.backgroud
+                        ? merge(background[mode], opts.backgroud)
+                        : background[mode],
+                },
+            })
         )
-    )
+    ) as Theme;
 }
 
-export default createMuiTheme(base);
-
+export default createMuiTheme(base) as Theme;
