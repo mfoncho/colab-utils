@@ -17,6 +17,7 @@ import {
 } from "@material-ui/core/styles";
 import { createMuiTheme, responsiveFontSizes } from "@material-ui/core/styles";
 import colors from "./colors";
+import { PartialTurtle } from "@colab/types";
 
 export const hexToRgba = (hex: any, opacity = 0.0) => {
     let chex = hex.charAt(0) === "#" ? hex.substring(1, 7) : hex;
@@ -26,7 +27,21 @@ export const hexToRgba = (hex: any, opacity = 0.0) => {
     return `rgba(${R},${G},${B},${opacity})`;
 };
 
+export const background = {
+    light: {
+        paper: "#ffffff",
+        default: "#fafafa",
+    },
+    dark: {
+        paper: "#15191E",
+        default: "#20262B",
+    },
+};
+
 const root = {
+
+    background,
+
     palette: {
         ...colors,
         primary: colors.indigo,
@@ -57,17 +72,6 @@ const root = {
 
     shape: {
         borderRadius: 10,
-    },
-};
-
-export const background = {
-    light: {
-        paper: "#ffffff",
-        default: "#fafafa",
-    },
-    dark: {
-        paper: "#15191E",
-        default: "#20262B",
     },
 };
 
@@ -102,15 +106,16 @@ export function makeStyles<
     return baseMakeStyles(styles, options);
 }
 
-export function createTheme(opts: any, mode: "light" | "dark" = "light") {
+export function createTheme(theme: PartialTurtle<Theme>, mode: "light" | "dark" = "light") {
+    let opts =  theme as any as Theme
     return responsiveFontSizes(
         createMuiTheme(
             merge(merge(base, opts), {
                 background,
                 palette: {
                     type: mode,
-                    background: opts.backgroud
-                        ? merge(background[mode], opts.backgroud)
+                    background: opts.background
+                        ? merge(background[mode], opts.background)
                         : background[mode],
                 },
             })
