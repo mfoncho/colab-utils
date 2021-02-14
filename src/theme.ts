@@ -106,11 +106,10 @@ export function makeStyles<
     return baseMakeStyles(styles, options);
 }
 
-export function createTheme(theme: PartialTurtle<Theme>, mode: "light" | "dark" = "light") {
-    let opts =  theme as any as Theme
+export function createTheme(theme: object, mode: "light" | "dark" = "light") {
     return responsiveFontSizes(
         createMuiTheme(
-            merge(merge(base, opts), {
+            merge(merge(base, theme), {
                 background,
                 palette: {
                     type: mode,
