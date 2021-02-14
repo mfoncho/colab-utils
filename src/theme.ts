@@ -107,7 +107,7 @@ export function createTheme(opts: any, mode: "light" | "dark" = "light") {
         createMuiTheme(
             merge(merge(base, opts), {
                 background,
-                paletette: {
+                palette: {
                     type: mode,
                     background: opts.backgroud
                         ? merge(background[mode], opts.backgroud)
