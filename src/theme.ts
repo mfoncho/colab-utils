@@ -1,4 +1,5 @@
 import merge from "lodash/merge";
+import clone from 'lodash/cloneDeep';
 import {
     ClassNameMap,
     Styles,
@@ -17,7 +18,6 @@ import {
 } from "@material-ui/core/styles";
 import { createMuiTheme, responsiveFontSizes } from "@material-ui/core/styles";
 import colors from "./colors";
-import { PartialTurtle } from "@colab/types";
 
 export const hexToRgba = (hex: any, opacity = 0.0) => {
     let chex = hex.charAt(0) === "#" ? hex.substring(1, 7) : hex;
@@ -109,11 +109,10 @@ export function makeStyles<
 export function createTheme(theme: object, mode: "light" | "dark" = "light") {
     return responsiveFontSizes(
         createMuiTheme(
-            merge(merge(base, theme), {
-                background,
+            merge(merge(clone(base), theme), {
                 palette: {
                     type: mode,
-                    background:  background[mode]
+                    background:  clone(background[mode])
                 },
             })
         )
