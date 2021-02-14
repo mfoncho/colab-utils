@@ -107,12 +107,22 @@ export function makeStyles<
 }
 
 export function createTheme(theme: object, mode: "light" | "dark" = "light") {
+
+    let bckgrnd = clone(background[mode]);
+
+    if((theme as any).palette){
+        if((theme as any).palette.background){
+            bckgrnd = merge(bckgrnd, (theme as any).palette.background)
+        }
+
+    }
+
     return responsiveFontSizes(
         createMuiTheme(
             merge(merge(clone(base), theme), {
                 palette: {
                     type: mode,
-                    background:  clone(background[mode])
+                    background: bckgrnd
                 },
             })
         )
