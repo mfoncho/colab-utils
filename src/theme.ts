@@ -114,9 +114,7 @@ export function createTheme(theme: PartialTurtle<Theme>, mode: "light" | "dark" 
                 background,
                 palette: {
                     type: mode,
-                    background: opts.background
-                        ? merge(background[mode], opts.background)
-                        : background[mode],
+                    background:  background[mode]
                 },
             })
         )
